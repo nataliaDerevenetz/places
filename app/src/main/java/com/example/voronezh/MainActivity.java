@@ -12,9 +12,11 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.List;
 
-public class MainActivity extends Activity implements GridFragment.OnFragmentSendDataGridListener, ListFragment.OnFragmentSendDataListListener, ObjectFragment.OnFragmentSendDataObjectListener {
+public class MainActivity extends AppCompatActivity implements GridFragment.OnFragmentSendDataGridListener, ListFragment.OnFragmentSendDataListListener, ObjectFragment.OnFragmentSendDataObjectListener {
 
     FragmentManager myFragmentManager;
     GridFragment myGridFragment;
@@ -30,6 +32,8 @@ public class MainActivity extends Activity implements GridFragment.OnFragmentSen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //скрывает название программы
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
         myFragmentManager = getFragmentManager();

@@ -27,6 +27,8 @@ import android.widget.TextView;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.appcompat.widget.SwitchCompat;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -45,6 +47,7 @@ public class ListFragment extends Fragment {
     TextView text;
     ListView objectsList;
     EditText userFilter;
+    SwitchCompat switchAccessibility;
     Button buttonBack;
     ArrayAdapter<Object> arrayAdapter;
 
@@ -205,6 +208,8 @@ public class ListFragment extends Fragment {
         text = (TextView) view.findViewById(R.id.textFragment);
         objectsList = (ListView) view.findViewById(R.id.objectsList);
         userFilter = (EditText)view.findViewById(R.id.objectFilter);
+        switchAccessibility = (SwitchCompat)view.findViewById(R.id.switchAccessibility);
+        switchAccessibility.setText("Доступная среда");
         // установка слушателя изменения текста
         userFilter.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) { }
