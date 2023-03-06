@@ -49,7 +49,7 @@ public class ObjectTypeAdapter extends ArrayAdapter<TypeObject> {
         };
         imgView.setOutlineProvider(provider);
         imgView.setClipToOutline(true);
-        //Устанавливаем текст - название объекта (например музей)
+        //Устанавливаем текст - название объекта (например музеи)
         nameView.setText(object.getName());
 
         return view;

@@ -6,14 +6,12 @@ public class TypeObject implements Serializable {
     private String nameType; // название типа
     private int idType;  // id типа
     private int imgResource; // изображение
-
     public TypeObject(String name, int id, int img){
 
         this.nameType=name;
         this.idType=id;
         this.imgResource=img;
     }
-
     public String getName() {
         return this.nameType;
     }
