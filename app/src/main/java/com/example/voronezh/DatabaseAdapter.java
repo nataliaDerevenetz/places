@@ -7,6 +7,8 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.yandex.mapkit.geometry.Point;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +34,37 @@ public class DatabaseAdapter {
 
     public List<Object> getObjectsFilter(int typeObject,String filter){
         ArrayList<Object> objects = new ArrayList<>();
-        Log.d("getObjectsFilter","getObjectsFilter");
-        String query = String.format("SELECT * FROM %s WHERE %s=? AND %s LIKE ?",DatabaseHelper.TABLE, DatabaseHelper.COLUMN_TYPE,DatabaseHelper.COLUMN_NAME);
-        filter = "%" + filter + "%";
-        Cursor cursor = database.rawQuery(query, new String[]{ String.valueOf(typeObject),filter});
+
+        //массив параметров передающихся в запрос
+        String[] strParam;
+        String strQuery = "SELECT * FROM %s WHERE %s=?";
+        String[] filters = null;
+        String query = String.format(strQuery,DatabaseHelper.TABLE, DatabaseHelper.COLUMN_TYPE);
+
+        filter = filter.trim();
+        filter = filter.replaceAll("\\s+", " ");
+        filters = filter.split(" ");
+
+        if(!filter.isEmpty() && !filter.trim().isEmpty()) {
+            strParam = new String[filters.length + 1];
+            strParam[0] = String.valueOf(typeObject);
+            for (int i = 0; i < filters.length; i++) {
+                strParam[i+1] = "%" + filters[i] + "%";
+                if (i == 0) {
+                    query += " AND (%s LIKE ?";
+                    query = String.format(query, DatabaseHelper.COLUMN_NAME);
+                } else {
+                    query += " AND %s LIKE ?";
+                    query = String.format(query, DatabaseHelper.COLUMN_NAME);
+                }
+            }
+            query += ")";
+        } else {
+            strParam = new String[1];
+            strParam[0] = String.valueOf(typeObject);
+        }
+
+        Cursor cursor = database.rawQuery(query, strParam);
         while (cursor.moveToNext()){
             int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME));
@@ -47,7 +76,7 @@ public class DatabaseAdapter {
             String website = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WEBSITE));
             int environ = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ENVIRON));
             int type = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TYPE));
-             Log.d("name",name);
+            //Log.d("name",name);
             objects.add(new Object(id,name,address,description,environ,location,type,phone,email,website));
         }
         cursor.close();

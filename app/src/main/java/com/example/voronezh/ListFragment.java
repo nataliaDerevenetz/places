@@ -112,6 +112,7 @@ public class ListFragment extends Fragment {
         adapter.close();
     }
     public void listFragmentSetData() {
+        Log.d("listFragmentSetData","listFragmentSetData");
         userFilter.setText("");
         typeObject = (TypeObject) getArguments().getSerializable(TypeObject.class.getSimpleName());
         text.setText(typeObject.getName());
@@ -216,9 +217,7 @@ public class ListFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             // при изменении текста выполняем фильтрацию
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                listFragmentSetDataFilter(s.toString());
-                //Log.d("sss","sss");
-                //userAdapter.getFilter().filter(s.toString());
+                if(!s.toString().isEmpty())listFragmentSetDataFilter(s.toString());
             }
         });
 
