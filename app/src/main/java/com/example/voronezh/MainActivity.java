@@ -14,14 +14,17 @@ import android.app.FragmentTransaction;
 
 import java.util.List;
 
-public class MainActivity extends Activity implements GridFragment.OnFragmentSendDataGridListener, ListFragment.OnFragmentSendDataListListener {
+public class MainActivity extends Activity implements GridFragment.OnFragmentSendDataGridListener, ListFragment.OnFragmentSendDataListListener, ObjectFragment.OnFragmentSendDataObjectListener {
 
     FragmentManager myFragmentManager;
     GridFragment myGridFragment;
     ListFragment myListFragment;
+    ObjectFragment myObjectFragment;
 
     final static String TAG_GRID = "FRAGMENT_GRID";
     final static String TAG_LIST = "FRAGMENT_LIST";
+
+    final static String TAG_OBJECT = "FRAGMENT_OBJECT";
 
 
     @Override
@@ -32,6 +35,7 @@ public class MainActivity extends Activity implements GridFragment.OnFragmentSen
         myFragmentManager = getFragmentManager();
         myGridFragment = new GridFragment();
         myListFragment = new ListFragment();
+        myObjectFragment = new ObjectFragment();
 
         if (savedInstanceState == null) {
             // при первом запуске программы
@@ -53,8 +57,6 @@ public class MainActivity extends Activity implements GridFragment.OnFragmentSen
         myListFragment.setArguments(bundle);
 
         FragmentTransaction fragmentTransaction = myFragmentManager.beginTransaction();
-       // fragmentTransaction.replace(R.id.container, (Fragment)myListFragment, TAG_LIST);
-
         Fragment listToShowFragment = myFragmentManager.findFragmentByTag(TAG_LIST);
 
         if (listToShowFragment == null) {
@@ -71,11 +73,40 @@ public class MainActivity extends Activity implements GridFragment.OnFragmentSen
     }
 
     @Override
-    public void onSendDataList() {
+    public void onSendDataListBack() {
         FragmentTransaction fragmentTransaction = myFragmentManager.beginTransaction();
         fragmentTransaction.hide(myListFragment);
         fragmentTransaction.show(myGridFragment).commit();
     }
 
+    @Override
+    public void onSendDataObjectBack() {
+        FragmentTransaction fragmentTransaction = myFragmentManager.beginTransaction();
+        fragmentTransaction.hide(myObjectFragment);
+        fragmentTransaction.show(myListFragment).commit();
+    }
+
+    @Override
+    public void onSendDataListObject(Object selectedObject) {
+        // создает или показывает фрагмент с данными конкретного объекта
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Object.class.getSimpleName(), selectedObject);
+        myObjectFragment.setArguments(bundle);
+
+        FragmentTransaction fragmentTransaction = myFragmentManager.beginTransaction();
+        Fragment listToObjectFragment = myFragmentManager.findFragmentByTag(TAG_OBJECT);
+
+        if (listToObjectFragment == null) {
+            fragmentTransaction.add(R.id.container, (Fragment) myObjectFragment, TAG_OBJECT);
+        } else {
+            myObjectFragment.objectFragmentSetData();
+        }
+        fragmentTransaction.hide(myListFragment);
+
+        fragmentTransaction.show(myObjectFragment).commit();
 
     }
+
+
+
+}

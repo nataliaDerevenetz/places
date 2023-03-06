@@ -1,6 +1,7 @@
 package com.example.voronezh;
 
 import android.content.Context;
+import android.graphics.Outline;
 import android.os.Bundle;
 
 import android.app.Fragment;
@@ -10,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.ViewOutlineProvider;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Spinner;
+
 
 import java.util.ArrayList;
 
@@ -42,21 +46,11 @@ public class GridFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public GridFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GridFragment.
-     */
     // TODO: Rename and change types and number of parameters
     public static GridFragment newInstance(String param1, String param2) {
         GridFragment fragment = new GridFragment();
@@ -80,11 +74,6 @@ public class GridFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
     }
 
     @Override
@@ -108,13 +97,21 @@ public class GridFragment extends Fragment {
         // Применяем адаптер к элементу spinner
         spinnerCity.setAdapter(adapter);
 
+//****************************
+        ImageView imgBanner = (ImageView) view.findViewById(R.id.imageBanner1);
 
+        ViewOutlineProvider provider = new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                int curveRadius = 24;
+                outline.setRoundRect(0, 0, view.getWidth(), (view.getHeight()), curveRadius);
+            }
+        };
 
+        imgBanner.setOutlineProvider(provider);
+        imgBanner.setClipToOutline(true);
 
-
-
-
-
+        
         objectsGrid = (GridView) view.findViewById(R.id.gridviewTypeObject);
 
         // создаем адаптер

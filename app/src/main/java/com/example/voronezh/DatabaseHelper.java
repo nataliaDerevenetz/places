@@ -18,9 +18,19 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private static final int SCHEMA = 1; // версия базы данных
     static final String TABLE = "objects"; // название таблицы в бд
     // названия столбцов
+
     static final String COLUMN_ID = "_id";
     static final String COLUMN_NAME = "name";
     static final String COLUMN_TYPE = "type";
+    static final String COLUMN_ADDRESS = "address";
+    static final String COLUMN_DESCRIPTION = "description";
+    static final String COLUMN_ENVIRON = "environ";
+    static final String COLUMN_LOCATION = "location";
+    static final String COLUMN_PHONE = "phone";
+    static final String COLUMN_EMAIL = "email";
+    static final String COLUMN_WEBSITE = "website";
+
+
     private Context myContext;
 
     DatabaseHelper(Context context) {

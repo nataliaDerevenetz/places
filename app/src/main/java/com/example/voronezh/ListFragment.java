@@ -1,6 +1,7 @@
 package com.example.voronezh;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.app.Fragment;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -34,10 +37,12 @@ public class ListFragment extends Fragment {
     TypeObject typeObject;
     TextView text;
     ListView objectsList;
+    Button buttonBack;
     ArrayAdapter<Object> arrayAdapter;
 
     interface OnFragmentSendDataListListener {
-        void onSendDataList();
+        void onSendDataListBack();
+        void onSendDataListObject(Object data);
     }
 
     private ListFragment.OnFragmentSendDataListListener fragmentSendDataListListener;
@@ -66,27 +71,58 @@ public class ListFragment extends Fragment {
 
         List<Object> objects = adapter.getObjects(typeObject.getIdType());
 
-        arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, objects);
-        objectsList.setAdapter(arrayAdapter);
+        for(Object object : objects){
 
+            String filename = String.valueOf(object.getId()) + ".png";
+            try(InputStream inputStream = getContext().getAssets().open(filename)){
+                object.setImgUrl(filename);
+                //Drawable drawable = Drawable.createFromStream(inputStream, null);
+                //object.setImg(drawable);
+               // Log.d("filename",filename);
+            }
+            catch (IOException e){
+                filename = String.valueOf(object.getId()) + ".jpg";
+                try(InputStream inputStream = getContext().getAssets().open(filename)){
+                    object.setImgUrl(filename);
+                    //Drawable drawable = Drawable.createFromStream(inputStream, null);
+                    //object.setImg(drawable);
+                   // Log.d("filename",filename);
+                } catch (IOException e_jpg) {e_jpg.printStackTrace();}
+               // e.printStackTrace();
+            }
+        }
+
+        ObjectAdapter objectAdapter = new ObjectAdapter(getContext(), R.layout.item_list, objects);
+        // устанавливаем адаптер
+        objectsList.setAdapter(objectAdapter);
+
+        objectsList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+            {
+                // получаем выбранный элемент
+                Object selectedObject = (Object) parent.getItemAtPosition(position);
+                Log.d("objectsListClick", selectedObject.getName());
+
+                fragmentSendDataListListener.onSendDataListObject(selectedObject);
+
+                // Посылаем данные Activity
+                //fragmentSendDataGridListener.onSendDataGrid(selectedObject);
+                // Посылаем данные Activity
+                //fragmentSendDataListener.onSendData(selectedItem);
+            }
+        });
+
+        //закрытие адаптера базы
         adapter.close();
     }
 
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFragment.
-     */
     // TODO: Rename and change types and number of parameters
-    public static ListFragment newInstance(String param1, String param2) {
+    public static ListFragment newInstance(TypeObject typeObj) {
         ListFragment fragment = new ListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(TypeObject.class.getSimpleName(),typeObj);
         fragment.setArguments(args);
         return fragment;
     }
@@ -116,51 +152,27 @@ public class ListFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        /*
-        DatabaseAdapter adapter = new DatabaseAdapter(getContext());
-        adapter.open();
-
-        List<Object> objects = adapter.getObjects(typeObject.getIdType());
-
-        arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, objects);
-        objectsList.setAdapter(arrayAdapter);
-
-        adapter.close();
-
-         */
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_list, container, false);
 
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
-
         text = (TextView) view.findViewById(R.id.textFragment);
-
         objectsList = (ListView) view.findViewById(R.id.objectsList);
+
         listFragmentSetData();
-        //text.setText(typeObject.getName());
 
-
-
-        Button buttonBack = (Button) view.findViewById(R.id.buttonBack);
+        buttonBack = (Button) view.findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v)
             {
-                fragmentSendDataListListener.onSendDataList();
+                fragmentSendDataListListener.onSendDataListBack();
             }
         });
-
-
-
 
         return view;
     }

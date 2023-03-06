@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
     tools:context=".GridFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -15,9 +16,8 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="#FFF">
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/imageBanner1"
@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/imageBanner1" />
         </RelativeLayout>
+
         <GridView
             android:id="@+id/gridviewTypeObject"
             android:layout_width="match_parent"

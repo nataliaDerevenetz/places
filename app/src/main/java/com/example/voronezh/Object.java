@@ -1,6 +1,10 @@
 package com.example.voronezh;
 
-public class Object {
+import android.graphics.drawable.Drawable;
+
+import java.io.Serializable;
+
+public class Object implements Serializable {
     private long id;
     private String name;
     private String address;
@@ -11,7 +15,9 @@ public class Object {
     private String phone;
     private String email;
     private String website;
-    private int img;
+  //  private Drawable img;
+    private String img_url;
+
 
     Object(long id, String name, String address, String description, int environ, String location, int type, String phone, String email, String website){
         this.id = id;
@@ -25,11 +31,13 @@ public class Object {
         this.email = email;
         this.website = website;
     }
-
+/*
     Object(long id, String name){
         this.id = id;
         this.name = name;
     }
+
+ */
     public long getId() {
         return id;
     }
@@ -104,13 +112,21 @@ public class Object {
     public void setWebsite(String website) {
         this.website = website;
     }
-
-    public int getImg() {
+/*
+    public Drawable getImg() {
         return img;
     }
 
-    public void setImg(int img) {
+    public void setImg(Drawable img) {
         this.img = img;
+    }
+*/
+    public String getImgUrl() {
+        return img_url;
+    }
+
+    public void setImgUrl(String img_url) {
+        this.img_url = img_url;
     }
 
     @Override
