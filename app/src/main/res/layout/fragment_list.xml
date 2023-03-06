@@ -16,12 +16,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Back" />
+        <EditText android:id="@+id/objectFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:inputType="text" />
         <TextView
             android:id="@+id/textFragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="fff" />
-
         <ListView
             android:id="@+id/objectsList"
             android:layout_width="match_parent"

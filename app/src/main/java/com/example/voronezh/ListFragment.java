@@ -6,13 +6,20 @@ import android.os.Bundle;
 
 import android.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -37,6 +44,7 @@ public class ListFragment extends Fragment {
     TypeObject typeObject;
     TextView text;
     ListView objectsList;
+    EditText userFilter;
     Button buttonBack;
     ArrayAdapter<Object> arrayAdapter;
 
@@ -61,7 +69,47 @@ public class ListFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public void listFragmentSetDataFilter(String filter) {
+        Log.d("filter",filter);
+        DatabaseAdapter adapter = new DatabaseAdapter(getContext());
+        adapter.open();
+
+        List<Object> objects = adapter.getObjectsFilter(typeObject.getIdType(),filter);
+
+        for(Object object : objects){
+
+            String filename = String.valueOf(object.getId()) + ".png";
+            try(InputStream inputStream = getContext().getAssets().open(filename)){
+                object.setImgUrl(filename);
+            }
+            catch (IOException e){
+                filename = String.valueOf(object.getId()) + ".jpg";
+                try(InputStream inputStream = getContext().getAssets().open(filename)){
+                    object.setImgUrl(filename);
+                } catch (IOException e_jpg) {e_jpg.printStackTrace();}
+                // e.printStackTrace();
+            }
+        }
+
+        ObjectAdapter objectAdapter = new ObjectAdapter(getContext(), R.layout.item_list, objects);
+        // устанавливаем адаптер
+        objectsList.setAdapter(objectAdapter);
+        objectsList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+            {
+                // получаем выбранный элемент
+                Object selectedObject = (Object) parent.getItemAtPosition(position);
+                Log.d("objectsListClick", selectedObject.getName());
+                // Посылаем данные Activity
+                fragmentSendDataListListener.onSendDataListObject(selectedObject);
+          }
+        });
+        //закрытие адаптера базы
+        adapter.close();
+    }
     public void listFragmentSetData() {
+        userFilter.setText("");
         typeObject = (TypeObject) getArguments().getSerializable(TypeObject.class.getSimpleName());
         text.setText(typeObject.getName());
         Log.d("TAG_LIST", typeObject.getName());
@@ -76,17 +124,11 @@ public class ListFragment extends Fragment {
             String filename = String.valueOf(object.getId()) + ".png";
             try(InputStream inputStream = getContext().getAssets().open(filename)){
                 object.setImgUrl(filename);
-                //Drawable drawable = Drawable.createFromStream(inputStream, null);
-                //object.setImg(drawable);
-               // Log.d("filename",filename);
             }
             catch (IOException e){
                 filename = String.valueOf(object.getId()) + ".jpg";
                 try(InputStream inputStream = getContext().getAssets().open(filename)){
                     object.setImgUrl(filename);
-                    //Drawable drawable = Drawable.createFromStream(inputStream, null);
-                    //object.setImg(drawable);
-                   // Log.d("filename",filename);
                 } catch (IOException e_jpg) {e_jpg.printStackTrace();}
                // e.printStackTrace();
             }
@@ -162,6 +204,43 @@ public class ListFragment extends Fragment {
 
         text = (TextView) view.findViewById(R.id.textFragment);
         objectsList = (ListView) view.findViewById(R.id.objectsList);
+        userFilter = (EditText)view.findViewById(R.id.objectFilter);
+        // установка слушателя изменения текста
+        userFilter.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            // при изменении текста выполняем фильтрацию
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                listFragmentSetDataFilter(s.toString());
+                //Log.d("sss","sss");
+                //userAdapter.getFilter().filter(s.toString());
+            }
+        });
+
+        //скрытие клавиатуры после нажатия enter
+        userFilter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_NEXT) {
+                    InputMethodManager inputManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+                return false;
+            }
+        });
+
+        //скрытие клавиатуры еcли TextEdit теряет фокус
+        userFilter.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+        });
+
+
 
         listFragmentSetData();
 

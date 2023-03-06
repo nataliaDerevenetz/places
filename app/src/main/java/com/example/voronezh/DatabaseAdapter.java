@@ -30,12 +30,13 @@ public class DatabaseAdapter {
         dbHelper.close();
     }
 
-    public List<Object> getObjects(int typeObject){
+    public List<Object> getObjectsFilter(int typeObject,String filter){
         ArrayList<Object> objects = new ArrayList<>();
-        String query = String.format("SELECT * FROM %s WHERE %s=?",DatabaseHelper.TABLE, DatabaseHelper.COLUMN_TYPE);
-        Cursor cursor = database.rawQuery(query, new String[]{ String.valueOf(typeObject)});
+        Log.d("getObjectsFilter","getObjectsFilter");
+        String query = String.format("SELECT * FROM %s WHERE %s=? AND %s LIKE ?",DatabaseHelper.TABLE, DatabaseHelper.COLUMN_TYPE,DatabaseHelper.COLUMN_NAME);
+        filter = "%" + filter + "%";
+        Cursor cursor = database.rawQuery(query, new String[]{ String.valueOf(typeObject),filter});
         while (cursor.moveToNext()){
-
             int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME));
             String address = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ADDRESS));
@@ -46,14 +47,31 @@ public class DatabaseAdapter {
             String website = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WEBSITE));
             int environ = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ENVIRON));
             int type = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TYPE));
-
-
-           // Log.d("name",name);
-
+             Log.d("name",name);
             objects.add(new Object(id,name,address,description,environ,location,type,phone,email,website));
-
         }
+        cursor.close();
+        return  objects;
+    }
 
+    public List<Object> getObjects(int typeObject){
+        ArrayList<Object> objects = new ArrayList<>();
+        String query = String.format("SELECT * FROM %s WHERE %s=?",DatabaseHelper.TABLE, DatabaseHelper.COLUMN_TYPE);
+        Cursor cursor = database.rawQuery(query, new String[]{ String.valueOf(typeObject)});
+        while (cursor.moveToNext()){
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME));
+            String address = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ADDRESS));
+            String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRIPTION));
+            String location = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LOCATION));
+            String phone = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PHONE));
+            String email = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EMAIL));
+            String website = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WEBSITE));
+            int environ = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ENVIRON));
+            int type = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TYPE));
+           // Log.d("name",name);
+            objects.add(new Object(id,name,address,description,environ,location,type,phone,email,website));
+        }
         cursor.close();
         return  objects;
     }
