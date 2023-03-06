@@ -8,39 +8,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="7">
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="#FFF">
-
-            <ImageView
-                android:id="@+id/imageBanner1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/banner1" />
-
-            <Spinner
-                android:id="@+id/spinnerCity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/imageBanner1" />
-        </RelativeLayout>
-
-        <GridView
-            android:id="@+id/gridviewTypeObject"
+        android:orientation="vertical" >
+        <FrameLayout
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="6"
-            android:horizontalSpacing="16dp"
-            android:numColumns="2"
-            android:stretchMode="columnWidth"
-            android:verticalSpacing="16dp" />
+            android:layout_weight="6" >
+        </FrameLayout>
     </LinearLayout>
 
 

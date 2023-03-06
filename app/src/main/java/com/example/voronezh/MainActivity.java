@@ -4,68 +4,78 @@ package com.example.voronezh;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.GridView;
-import java.util.ArrayList;
 
-public class MainActivity extends Activity {
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 
-    String[] city = { "Воронежская область", "Воронеж", "Богучар", "Борисоглебск", "Бобров"};
+import java.util.List;
 
-    ArrayList<TypeObject> objects = new ArrayList<TypeObject>();
-    GridView objectsGrid;
+public class MainActivity extends Activity implements GridFragment.OnFragmentSendDataGridListener, ListFragment.OnFragmentSendDataListListener {
+
+    FragmentManager myFragmentManager;
+    GridFragment myGridFragment;
+    ListFragment myListFragment;
+
+    final static String TAG_GRID = "FRAGMENT_GRID";
+    final static String TAG_LIST = "FRAGMENT_LIST";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Spinner spinnerCity = findViewById(R.id.spinnerCity);
-        // Создаем адаптер ArrayAdapter с помощью массива строк и стандартной разметки элемета spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, city);
-        // Определяем разметку для использования при выборе элемента
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Применяем адаптер к элементу spinner
-        spinnerCity.setAdapter(adapter);
+        myFragmentManager = getFragmentManager();
+        myGridFragment = new GridFragment();
+        myListFragment = new ListFragment();
 
-
-
-
-        // начальная инициализация списка
-        setInitialData();
-
-        // получаем элемент GridView
-        objectsGrid = findViewById(R.id.gridviewTypeObject);
-        // создаем адаптер
-        ObjectTypeAdapter objectAdapter = new ObjectTypeAdapter(this, R.layout.cell_grid, objects);
-        // устанавливаем адаптер
-        objectsGrid.setAdapter(objectAdapter);
-
-
-
-
-        // получаем элемент GridView
-        //GridView typeObjectList = findViewById(R.id.gridviewTypeObject);
-        // создаем адаптер
-        //ArrayAdapter<String> adapterTypeObject = new ArrayAdapter(this, android.R.layout.simple_list_item_1, city);
-        //typeObjectList.setAdapter(adapterTypeObject);
-    }
-
-    private void setInitialData(){
-
-        objects.add(new TypeObject ("Музеи Воронежа", 1, R.drawable.type1));
-        objects.add(new TypeObject ("Музеи области ", 2, R.drawable.type2));
-        objects.add(new TypeObject ("Театры",3, R.drawable.type3));
-        objects.add(new TypeObject ("Храмы",4, R.drawable.type4));
-        objects.add(new TypeObject ("Парки",5, R.drawable.type5));
-        objects.add(new TypeObject ("Памятники природы",6, R.drawable.type6));
-        objects.add(new TypeObject ("Санатории",7, R.drawable.type7));
-        objects.add(new TypeObject ("Активный отдых", 8, R.drawable.type8));
-        objects.add(new TypeObject ("Памятники", 9, R.drawable.type9));
-        objects.add(new TypeObject ("Достопримечательности", 10, R.drawable.type10));
-        objects.add(new TypeObject ("Спорт", 11, R.drawable.type11));
-        objects.add(new TypeObject ("Развлечения", 12, R.drawable.type12));
+        if (savedInstanceState == null) {
+            // при первом запуске программы
+            FragmentTransaction fragmentTransaction = myFragmentManager.beginTransaction();
+            // добавляем в контейнер при помощи метода add()
+            fragmentTransaction.add(R.id.container, (Fragment)myGridFragment, TAG_GRID);
+            fragmentTransaction.commit();
+        }
 
     }
-}
+
+    @Override
+    public void onSendDataGrid(TypeObject selectedObjectType) {
+
+        Log.d("TAG_LOG", selectedObjectType.getName());
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(TypeObject.class.getSimpleName(), selectedObjectType);
+        myListFragment.setArguments(bundle);
+
+        FragmentTransaction fragmentTransaction = myFragmentManager.beginTransaction();
+       // fragmentTransaction.replace(R.id.container, (Fragment)myListFragment, TAG_LIST);
+
+        Fragment listToShowFragment = myFragmentManager.findFragmentByTag(TAG_LIST);
+
+        if (listToShowFragment == null) {
+            fragmentTransaction.add(R.id.container, (Fragment) myListFragment, TAG_LIST);
+        } else {
+            myListFragment.listFragmentSetData();
+        }
+        fragmentTransaction.hide(myGridFragment);
+
+        fragmentTransaction.show(myListFragment).commit();
+
+        //fragmentTransaction.commit();
+
+    }
+
+    @Override
+    public void onSendDataList() {
+        FragmentTransaction fragmentTransaction = myFragmentManager.beginTransaction();
+        fragmentTransaction.hide(myListFragment);
+        fragmentTransaction.show(myGridFragment).commit();
+    }
+
+
+    }

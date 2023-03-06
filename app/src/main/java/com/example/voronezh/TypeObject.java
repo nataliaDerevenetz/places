@@ -1,6 +1,8 @@
 package com.example.voronezh;
 
-public class TypeObject {
+import java.io.Serializable;
+
+public class TypeObject implements Serializable {
     private String nameType; // название типа
     private int idType;  // id типа
     private int imgResource; // изображение
