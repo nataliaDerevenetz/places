@@ -33,10 +33,13 @@ public class ObjectTypeAdapter extends ArrayAdapter<TypeObject> {
         ImageView imgView = view.findViewById(R.id.imageObject);
         TextView nameView = view.findViewById(R.id.textObject);
 
+        //Получаем данные о объекте в TypeObject
         TypeObject object = objects.get(position);
 
+        //Устанавливаем картинку для объекта
         imgView.setImageResource(object.getImgResource());
-        //-----
+
+        // Устанавливаем округлые углы у картинки
         ViewOutlineProvider provider = new ViewOutlineProvider() {
             @Override
             public void getOutline(View view, Outline outline) {
@@ -44,11 +47,9 @@ public class ObjectTypeAdapter extends ArrayAdapter<TypeObject> {
                 outline.setRoundRect(0, 0, view.getWidth(), (view.getHeight()), curveRadius);
             }
         };
-
         imgView.setOutlineProvider(provider);
         imgView.setClipToOutline(true);
-
-        //imgView.setClipToOutline(true);
+        //Устанавливаем текст - название объекта (например музей)
         nameView.setText(object.getName());
 
         return view;

@@ -97,9 +97,9 @@ public class GridFragment extends Fragment {
         // Применяем адаптер к элементу spinner
         spinnerCity.setAdapter(adapter);
 
-//****************************
-        ImageView imgBanner = (ImageView) view.findViewById(R.id.imageBanner1);
 
+        ImageView imgBanner = (ImageView) view.findViewById(R.id.imageBanner1);
+        // Делаем округлым изображение верхнего баннера на главном экране
         ViewOutlineProvider provider = new ViewOutlineProvider() {
             @Override
             public void getOutline(View view, Outline outline) {
@@ -114,9 +114,9 @@ public class GridFragment extends Fragment {
 
         objectsGrid = (GridView) view.findViewById(R.id.gridviewTypeObject);
 
-        // создаем адаптер
+        // создаем адаптер для типов объектов
         ObjectTypeAdapter objectAdapter = new ObjectTypeAdapter(getContext(), R.layout.cell_grid, objects);
-        // устанавливаем адаптер
+        // устанавливаем адаптер, GridView заполняется данными из адаптера
         objectsGrid.setAdapter(objectAdapter);
 
 
@@ -124,13 +124,12 @@ public class GridFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id)
             {
-                // получаем выбранный элемент
+                // получаем выбранный элемент в GridView
                 TypeObject selectedObject = (TypeObject) parent.getItemAtPosition(position);
                 Log.d(TAG_LOG, selectedObject.getName());
 
+                // Посылаем данные Activity - какой тип объектов был выбран (музеи, театры и т.п.)
                 fragmentSendDataGridListener.onSendDataGrid(selectedObject);
-                // Посылаем данные Activity
-                //fragmentSendDataListener.onSendData(selectedItem);
             }
         });
 
@@ -138,7 +137,7 @@ public class GridFragment extends Fragment {
     }
 
     private void setInitialData(){
-
+        // заполняем ArrayList<TypeObject> данными
         objects.add(new TypeObject ("Музеи Воронежа", 1, R.drawable.type1));
         objects.add(new TypeObject ("Музеи области ", 2, R.drawable.type2));
         objects.add(new TypeObject ("Театры",3, R.drawable.type3));

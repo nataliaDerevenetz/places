@@ -49,6 +49,7 @@ public class MainActivity extends Activity implements GridFragment.OnFragmentSen
 
     @Override
     public void onSendDataGrid(TypeObject selectedObjectType) {
+        //создает или показывает фрагмент со списком объектов одного типа, типа музеи
 
         Log.d("TAG_LOG", selectedObjectType.getName());
 
@@ -67,8 +68,6 @@ public class MainActivity extends Activity implements GridFragment.OnFragmentSen
         fragmentTransaction.hide(myGridFragment);
 
         fragmentTransaction.show(myListFragment).commit();
-
-        //fragmentTransaction.commit();
 
     }
 

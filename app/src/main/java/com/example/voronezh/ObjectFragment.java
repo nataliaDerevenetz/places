@@ -132,12 +132,6 @@ public class ObjectFragment extends Fragment {
 
         MapKitFactory.getInstance().onStart();
         mapview.onStart();
-/*
-        mapview.getMap().move(
-                new CameraPosition(pointObject, 11.0f, 0.0f, 0.0f),
-                new Animation(Animation.Type.SMOOTH, 0),
-                null);
-*/
         mapview.getMap().setRotateGesturesEnabled(true);
     }
 
