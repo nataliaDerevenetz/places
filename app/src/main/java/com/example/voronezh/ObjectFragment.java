@@ -1,6 +1,7 @@
 package com.example.voronezh;
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.os.Bundle;
 
 import android.app.Fragment;
@@ -17,7 +18,12 @@ import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.layers.ObjectEvent;
+import com.yandex.mapkit.logo.Alignment;
+import com.yandex.mapkit.logo.HorizontalAlignment;
+import com.yandex.mapkit.logo.VerticalAlignment;
 import com.yandex.mapkit.map.CameraPosition;
+import com.yandex.mapkit.map.IconStyle;
+import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.mapview.MapView;
 import com.yandex.mapkit.user_location.UserLocationLayer;
 
@@ -51,11 +57,10 @@ public class ObjectFragment extends Fragment {
     public void objectFragmentSetData() {
     // заполняет фрагмент объекта
         object = (Object) getArguments().getSerializable(Object.class.getSimpleName());
-        Log.d("object",object.getDescription());
-      //  text.setText(object.getDescription());
+ //       Log.d("object",object.getDescription());
         text2.setText(object.getDescription());
 
-
+        //получение координат для отрисовки на карте из Object
         String[] points = null;
         points = object.getLocation().split(",");
         Point pointObject = new Point(Double.valueOf(points[0]),Double.valueOf(points[1]));
@@ -64,9 +69,16 @@ public class ObjectFragment extends Fragment {
                 new CameraPosition(pointObject, 16.0f, 0.0f, 0.0f),
                 new Animation(Animation.Type.SMOOTH, 0),
                 null);
-
+        //удаление всех меток с карты
         mapview.getMap().getMapObjects().clear();
-        mapview.getMap().getMapObjects().addPlacemark(pointObject, ImageProvider.fromResource(getContext(), R.drawable.lable2));
+        //установка и позиционирование метки объекта относительно низа середины картинки
+        IconStyle istyle= new IconStyle();
+        istyle.setAnchor(new PointF(0.5f,1.0f));
+        PlacemarkMapObject mark = mapview.getMap().getMapObjects().addPlacemark(pointObject, ImageProvider.fromResource(getContext(), R.drawable.lable));
+        mark.setIconStyle(istyle);
+        //установка логотипа яндекс в правый верхний угол
+        mapview.getMap().getLogo().setAlignment(new Alignment(HorizontalAlignment.RIGHT,VerticalAlignment.TOP));
+
     }
 
 
@@ -137,7 +149,6 @@ public class ObjectFragment extends Fragment {
 
         mapview = (MapView) view.findViewById(R.id.mapview);
 
-        text = (TextView) view.findViewById(R.id.textObjectFragment);
         text2 = (TextView) view.findViewById(R.id.text_bottom_sheet);
 
         objectFragmentSetData();

@@ -111,7 +111,7 @@ public class GridFragment extends Fragment {
         imgBanner.setOutlineProvider(provider);
         imgBanner.setClipToOutline(true);
 
-        
+
         objectsGrid = (GridView) view.findViewById(R.id.gridviewTypeObject);
 
         // создаем адаптер
@@ -135,7 +135,6 @@ public class GridFragment extends Fragment {
         });
 
         return view;
-        //return inflater.inflate(R.layout.fragment_grid, container, false);
     }
 
     private void setInitialData(){
