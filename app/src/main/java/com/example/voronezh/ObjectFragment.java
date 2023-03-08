@@ -65,15 +65,12 @@ public class ObjectFragment extends Fragment {
     }
 
     public void objectFragmentSetData() {
-        //установка высоты нижнего экрана
-     //  bottomSheetBehavior.setExpandedOffset(300);
-    // заполняет фрагмент объекта
+        // заполняет фрагмент объекта
         object = (Object) getArguments().getSerializable(Object.class.getSimpleName());
        // Log.d("object",object.getDescription());
         llBottomSheet.fullScroll(NestedScrollView.FOCUS_UP);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         text2.setText(object.getDescription());
-       // text2.setText(object.getDescription() + object.getDescription() + object.getDescription()+ object.getDescription()+ object.getDescription());
 
         //получение координат для отрисовки на карте из Object
         String[] points = null;
@@ -162,23 +159,17 @@ public class ObjectFragment extends Fragment {
 
         llBottomSheet = (NestedScrollView) view.findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
-
-
+        //получаем высоту экрана
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int height = displayMetrics.heightPixels;
+
+        //устанавливаем высоту нижнего экрана
         int maxHeight = (int) (height*0.80);
         bottomSheetBehavior.setMaxHeight(maxHeight);
         llBottomSheet.setMinimumHeight(maxHeight);
-        //bottomSheetBehavior.setMaxHeight(700);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-/*
-        LinearLayout llBottomSheet = (LinearLayout) view.findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
 
-        //bottomSheetBehavior.setMaxHeight(700);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
-*/
         objectFragmentSetData();
 
         buttonBackToList = (Button) view.findViewById(R.id.buttonBackToList);
