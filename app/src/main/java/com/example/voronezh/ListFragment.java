@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -209,8 +210,20 @@ public class ListFragment extends Fragment {
         text = (TextView) view.findViewById(R.id.textFragment);
         objectsList = (ListView) view.findViewById(R.id.objectsList);
         userFilter = (EditText)view.findViewById(R.id.objectFilter);
+
         switchAccessibility = (SwitchCompat)view.findViewById(R.id.switchAccessibility);
         switchAccessibility.setText("Доступная среда");
+        switchAccessibility.setChecked(false);
+        switchAccessibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.d("Accessibility","AccessibilityON");
+                } else {
+                    Log.d("Accessibility","AccessibilityOFF");
+                }
+            }
+        });
+
         // установка слушателя изменения текста
         userFilter.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) { }

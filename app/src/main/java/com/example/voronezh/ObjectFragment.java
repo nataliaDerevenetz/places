@@ -12,8 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
@@ -41,6 +44,7 @@ public class ObjectFragment extends Fragment {
     TextView text;
     TextView text2;
     Button buttonBackToList;
+    BottomSheetBehavior bottomSheetBehavior;
     private final String MAPKIT_API_KEY = "f0f2e1b2-28a8-49f5-a12f-fb3164feec22";
     public MapView mapview;
     public UserLocationLayer userLocationLayer;
@@ -56,10 +60,13 @@ public class ObjectFragment extends Fragment {
     }
 
     public void objectFragmentSetData() {
+        //установка высоты нижнего экрана
+     //  bottomSheetBehavior.setExpandedOffset(300);
     // заполняет фрагмент объекта
         object = (Object) getArguments().getSerializable(Object.class.getSimpleName());
- //       Log.d("object",object.getDescription());
-        text2.setText(object.getDescription());
+       // Log.d("object",object.getDescription());
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+        text2.setText(object.getDescription() + object.getDescription() + object.getDescription());
 
         //получение координат для отрисовки на карте из Object
         String[] points = null;
@@ -145,6 +152,13 @@ public class ObjectFragment extends Fragment {
         mapview = (MapView) view.findViewById(R.id.mapview);
 
         text2 = (TextView) view.findViewById(R.id.text_bottom_sheet);
+
+
+        LinearLayout llBottomSheet = (LinearLayout) view.findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+
+        //bottomSheetBehavior.setMaxHeight(700);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
 
         objectFragmentSetData();
 
