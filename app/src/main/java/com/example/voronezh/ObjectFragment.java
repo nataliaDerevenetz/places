@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import android.app.Fragment;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.core.widget.NestedScrollView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -45,6 +49,7 @@ public class ObjectFragment extends Fragment {
     TextView text2;
     Button buttonBackToList;
     BottomSheetBehavior bottomSheetBehavior;
+    NestedScrollView llBottomSheet;
     private final String MAPKIT_API_KEY = "f0f2e1b2-28a8-49f5-a12f-fb3164feec22";
     public MapView mapview;
     public UserLocationLayer userLocationLayer;
@@ -65,8 +70,10 @@ public class ObjectFragment extends Fragment {
     // заполняет фрагмент объекта
         object = (Object) getArguments().getSerializable(Object.class.getSimpleName());
        // Log.d("object",object.getDescription());
+        llBottomSheet.fullScroll(NestedScrollView.FOCUS_UP);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
-        text2.setText(object.getDescription() + object.getDescription() + object.getDescription());
+        text2.setText(object.getDescription());
+       // text2.setText(object.getDescription() + object.getDescription() + object.getDescription()+ object.getDescription()+ object.getDescription());
 
         //получение координат для отрисовки на карте из Object
         String[] points = null;
@@ -153,13 +160,25 @@ public class ObjectFragment extends Fragment {
 
         text2 = (TextView) view.findViewById(R.id.text_bottom_sheet);
 
+        llBottomSheet = (NestedScrollView) view.findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
 
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int height = displayMetrics.heightPixels;
+        int maxHeight = (int) (height*0.80);
+        bottomSheetBehavior.setMaxHeight(maxHeight);
+        llBottomSheet.setMinimumHeight(maxHeight);
+        //bottomSheetBehavior.setMaxHeight(700);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+
+/*
         LinearLayout llBottomSheet = (LinearLayout) view.findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
 
         //bottomSheetBehavior.setMaxHeight(700);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
-
+*/
         objectFragmentSetData();
 
         buttonBackToList = (Button) view.findViewById(R.id.buttonBackToList);
