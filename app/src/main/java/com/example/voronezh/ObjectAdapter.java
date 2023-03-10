@@ -34,6 +34,7 @@ public class ObjectAdapter extends ArrayAdapter<Object>{
 
         ImageView imgView = view.findViewById(R.id.imgObj);
         TextView nameView = view.findViewById(R.id.name);
+        TextView addressView = view.findViewById(R.id.address);
 
         Object object = objects.get(position);
         if(object.getEnviron() == 1) {
@@ -60,6 +61,7 @@ public class ObjectAdapter extends ArrayAdapter<Object>{
             //imgView.setClipToOutline(true);
         } catch (IOException e){e.printStackTrace();}
         nameView.setText(object.getName());
+        addressView.setText(object.getAddress());
 
         return view;
     }

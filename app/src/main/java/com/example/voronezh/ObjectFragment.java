@@ -38,6 +38,8 @@ import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.yandex.runtime.image.ImageProvider;
 
+import java.util.Arrays;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ObjectFragment#newInstance} factory method to
@@ -70,6 +72,19 @@ public class ObjectFragment extends Fragment {
        // Log.d("object",object.getDescription());
         llBottomSheet.fullScroll(NestedScrollView.FOCUS_UP);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+/*
+        Log.d("LOG::",object.getDescription());
+        String s1 = object.getDescription();
+        char[] chars = new char[s1.length()];
+        for (int i = 0; i < s1.length(); i++) {
+            chars[i] = s1.charAt(i);
+            int n = Character.getNumericValue(chars[i]);
+            Log.d("Character:",String.valueOf((int)chars[i]));
+            Log.d("Character:",String.valueOf(chars[i]));
+        }
+*/
+
+
         text2.setText(object.getDescription());
 
         //получение координат для отрисовки на карте из Object
