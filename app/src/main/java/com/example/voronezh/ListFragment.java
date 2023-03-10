@@ -1,6 +1,7 @@
 package com.example.voronezh;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -53,6 +54,10 @@ public class ListFragment extends Fragment {
     ArrayAdapter<Object> arrayAdapter;
     String filterText;
     boolean isAccessebility;
+
+    private static final String PREFS_FILE = "Account";
+    private static final String PREF_ACCESS = "Accessebility";
+    SharedPreferences settings;
 
     interface OnFragmentSendDataListListener {
         void onSendDataListBack();
@@ -196,6 +201,9 @@ public class ListFragment extends Fragment {
 
             Log.d("TAG_LIST", typeObject.getName());
 
+            settings = getContext().getSharedPreferences(PREFS_FILE, getContext().MODE_PRIVATE);
+            isAccessebility = settings.getBoolean(PREF_ACCESS,false);
+
             //     mParam1 = getArguments().getString(ARG_PARAM1);
             //     mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -217,7 +225,7 @@ public class ListFragment extends Fragment {
         switchAccessibility.setText("Доступная среда");
 
         filterText = "";
-        isAccessebility = true;
+       // isAccessebility = true;
         switchAccessibility.setChecked(isAccessebility);
 
         switchAccessibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -226,10 +234,16 @@ public class ListFragment extends Fragment {
                     Log.d("Accessibility","AccessibilityON");
                     listFragmentSetDataFilter(filterText, true);
                     isAccessebility = true;
+                    SharedPreferences.Editor prefEditor = settings.edit();
+                    prefEditor.putBoolean(PREF_ACCESS, isAccessebility);
+                    prefEditor.apply();
                 } else {
                     Log.d("Accessibility","AccessibilityOFF");
                     listFragmentSetDataFilter(filterText, false);
                     isAccessebility = false;
+                    SharedPreferences.Editor prefEditor = settings.edit();
+                    prefEditor.putBoolean(PREF_ACCESS, isAccessebility);
+                    prefEditor.apply();
                 }
             }
         });
