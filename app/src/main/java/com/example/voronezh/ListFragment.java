@@ -51,6 +51,8 @@ public class ListFragment extends Fragment {
     SwitchCompat switchAccessibility;
     Button buttonBack;
     ArrayAdapter<Object> arrayAdapter;
+    String filterText;
+    boolean isAccessebility;
 
     interface OnFragmentSendDataListListener {
         void onSendDataListBack();
@@ -73,12 +75,12 @@ public class ListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public void listFragmentSetDataFilter(String filter) {
+    public void listFragmentSetDataFilter(String filter, boolean isAccess) {
         Log.d("filter",filter);
         DatabaseAdapter adapter = new DatabaseAdapter(getContext());
         adapter.open();
 
-        List<Object> objects = adapter.getObjectsFilter(typeObject.getIdType(),filter);
+        List<Object> objects = adapter.getObjectsFilter(typeObject.getIdType(),filter,isAccess);
 
         for(Object object : objects){
 
@@ -122,7 +124,7 @@ public class ListFragment extends Fragment {
         DatabaseAdapter adapter = new DatabaseAdapter(getContext());
         adapter.open();
 
-        List<Object> objects = adapter.getObjects(typeObject.getIdType());
+        List<Object> objects = adapter.getObjects(typeObject.getIdType(),isAccessebility);
 
         for(Object object : objects){
 
@@ -213,13 +215,21 @@ public class ListFragment extends Fragment {
 
         switchAccessibility = (SwitchCompat)view.findViewById(R.id.switchAccessibility);
         switchAccessibility.setText("Доступная среда");
-        switchAccessibility.setChecked(false);
+
+        filterText = "";
+        isAccessebility = true;
+        switchAccessibility.setChecked(isAccessebility);
+
         switchAccessibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Log.d("Accessibility","AccessibilityON");
+                    listFragmentSetDataFilter(filterText, true);
+                    isAccessebility = true;
                 } else {
                     Log.d("Accessibility","AccessibilityOFF");
+                    listFragmentSetDataFilter(filterText, false);
+                    isAccessebility = false;
                 }
             }
         });
@@ -230,7 +240,8 @@ public class ListFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             // при изменении текста выполняем фильтрацию
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(!s.toString().isEmpty())listFragmentSetDataFilter(s.toString());
+                filterText = s.toString();
+                if(!s.toString().isEmpty())listFragmentSetDataFilter(s.toString(),isAccessebility);
             }
         });
 

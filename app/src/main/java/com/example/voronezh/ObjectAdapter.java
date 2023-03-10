@@ -36,6 +36,10 @@ public class ObjectAdapter extends ArrayAdapter<Object>{
         TextView nameView = view.findViewById(R.id.name);
 
         Object object = objects.get(position);
+        if(object.getEnviron() == 1) {
+            ImageView imgAccess = view.findViewById(R.id.imgAccessibility);
+            imgAccess.setImageResource(R.drawable.baseline_accessibility_white_24dp);
+        }
 
         try (InputStream inputStream = getContext().getAssets().open(object.getImgUrl())) {
             Drawable drawable = Drawable.createFromStream(inputStream, null);

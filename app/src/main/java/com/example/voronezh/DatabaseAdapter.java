@@ -32,7 +32,7 @@ public class DatabaseAdapter {
         dbHelper.close();
     }
 
-    public List<Object> getObjectsFilter(int typeObject,String filter){
+    public List<Object> getObjectsFilter(int typeObject,String filter,boolean isAccess){
         ArrayList<Object> objects = new ArrayList<>();
 
         //массив параметров передающихся в запрос
@@ -46,7 +46,9 @@ public class DatabaseAdapter {
         filters = filter.split(" ");
 
         if(!filter.isEmpty() && !filter.trim().isEmpty()) {
-            strParam = new String[filters.length + 1];
+            if(isAccess) { strParam = new String[filters.length + 2];} else {
+                strParam = new String[filters.length + 1];
+            }
             strParam[0] = String.valueOf(typeObject);
             for (int i = 0; i < filters.length; i++) {
                 strParam[i+1] = "%" + filters[i] + "%";
@@ -60,8 +62,16 @@ public class DatabaseAdapter {
             }
             query += ")";
         } else {
-            strParam = new String[1];
+            if(isAccess) {strParam = new String[2];} else {
+                strParam = new String[1];
+            }
             strParam[0] = String.valueOf(typeObject);
+        }
+
+        if(isAccess) {
+            query += " AND %s=?";
+            query = String.format(query, DatabaseHelper.COLUMN_ENVIRON);
+            strParam[strParam.length-1] = "1";
         }
 
         Cursor cursor = database.rawQuery(query, strParam);
@@ -83,10 +93,16 @@ public class DatabaseAdapter {
         return  objects;
     }
 
-    public List<Object> getObjects(int typeObject){
+    public List<Object> getObjects(int typeObject,boolean isAccess){
         ArrayList<Object> objects = new ArrayList<>();
-        String query = String.format("SELECT * FROM %s WHERE %s=?",DatabaseHelper.TABLE, DatabaseHelper.COLUMN_TYPE);
-        Cursor cursor = database.rawQuery(query, new String[]{ String.valueOf(typeObject)});
+        Cursor cursor;
+        if(!isAccess) {
+            String query = String.format("SELECT * FROM %s WHERE %s=?", DatabaseHelper.TABLE, DatabaseHelper.COLUMN_TYPE);
+            cursor = database.rawQuery(query, new String[]{String.valueOf(typeObject)});
+        } else{
+            String query = String.format("SELECT * FROM %s WHERE %s=? AND %s=?", DatabaseHelper.TABLE, DatabaseHelper.COLUMN_TYPE, DatabaseHelper.COLUMN_ENVIRON);
+            cursor = database.rawQuery(query, new String[]{String.valueOf(typeObject),"1"});
+        }
         while (cursor.moveToNext()){
             int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME));

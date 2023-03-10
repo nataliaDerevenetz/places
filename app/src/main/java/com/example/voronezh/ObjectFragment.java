@@ -138,9 +138,9 @@ public class ObjectFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        String[] points = null;
-        points = object.getLocation().split(",");
-        Point pointObject = new Point(Double.valueOf(points[0]),Double.valueOf(points[1]));
+        //String[] points = null;
+        //points = object.getLocation().split(",");
+       // Point pointObject = new Point(Double.valueOf(points[0]),Double.valueOf(points[1]));
 
         MapKitFactory.getInstance().onStart();
         mapview.onStart();
