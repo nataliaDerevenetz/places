@@ -1,7 +1,11 @@
 package com.example.voronezh;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Outline;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.app.Fragment;
@@ -11,8 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -38,6 +45,8 @@ import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.yandex.runtime.image.ImageProvider;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 /**
@@ -51,7 +60,16 @@ public class ObjectFragment extends Fragment {
     TextView text2;
     Button buttonBackToList;
     BottomSheetBehavior bottomSheetBehavior;
-    NestedScrollView llBottomSheet;
+    LinearLayout llBottomSheet;
+    NestedScrollView nestedScroll;
+    ImageButton imageButtonCall;
+    ImageButton imageButtonWebsite;
+    ImageButton imageButtonEmail;
+    TextView textName;
+    TextView textAddress;
+    TextView textDescription;
+    ImageView imageObject;
+    LinearLayout llBottomObjects;
     private final String MAPKIT_API_KEY = "f0f2e1b2-28a8-49f5-a12f-fb3164feec22";
     public MapView mapview;
     public UserLocationLayer userLocationLayer;
@@ -70,7 +88,7 @@ public class ObjectFragment extends Fragment {
         // заполняет фрагмент объекта
         object = (Object) getArguments().getSerializable(Object.class.getSimpleName());
        // Log.d("object",object.getDescription());
-        llBottomSheet.fullScroll(NestedScrollView.FOCUS_UP);
+        nestedScroll.fullScroll(NestedScrollView.FOCUS_UP);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 /*
         Log.d("LOG::",object.getDescription());
@@ -85,7 +103,69 @@ public class ObjectFragment extends Fragment {
 */
 
 
-        text2.setText(object.getDescription());
+        textDescription.setText(object.getDescription());
+        textName.setText(object.getName());
+        textAddress.setText(object.getAddress());
+
+        int weightSum = 3;
+        if(object.getPhone().isEmpty()) {
+            weightSum--;
+        }
+        if(object.getEmail().isEmpty()) {
+            weightSum--;
+        }
+        if(object.getWebsite().isEmpty()) {
+            weightSum--;
+        }
+
+        llBottomObjects.setWeightSum(weightSum);
+
+        if(object.getPhone().isEmpty()) {
+            imageButtonCall.setVisibility(View.GONE);
+        } else {
+            if (imageButtonCall.getVisibility() == View.GONE) {
+                imageButtonCall.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if(object.getWebsite().isEmpty()) {
+            imageButtonWebsite.setVisibility(View.GONE);
+        } else {
+            if (imageButtonWebsite.getVisibility() == View.GONE) {
+                imageButtonWebsite.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if(object.getEmail().isEmpty()) {
+            imageButtonEmail.setVisibility(View.GONE);
+        } else {
+            if (imageButtonEmail.getVisibility() == View.GONE) {
+                imageButtonEmail.setVisibility(View.VISIBLE);
+            }
+        }
+
+
+        try (InputStream inputStream = getContext().getAssets().open(object.getImgUrl())) {
+            Drawable drawable = Drawable.createFromStream(inputStream, null);
+            imageObject.setImageDrawable(drawable);
+
+            ViewOutlineProvider provider = new ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    int curveRadius = 24;
+                    outline.setRoundRect(0, 0, view.getWidth(), (view.getHeight()), curveRadius);
+                }
+            };
+
+            imageObject.setOutlineProvider(provider);
+            imageObject.setClipToOutline(true);
+
+
+            //imgView.setClipToOutline(true);
+        } catch (IOException e){e.printStackTrace();}
+
+
+
 
         //получение координат для отрисовки на карте из Object
         String[] points = null;
@@ -170,9 +250,11 @@ public class ObjectFragment extends Fragment {
 
         mapview = (MapView) view.findViewById(R.id.mapview);
 
-        text2 = (TextView) view.findViewById(R.id.text_bottom_sheet);
+        nestedScroll = (NestedScrollView) view.findViewById(R.id.bottom_sheet_scroll);
 
-        llBottomSheet = (NestedScrollView) view.findViewById(R.id.bottom_sheet);
+        llBottomObjects = (LinearLayout) view.findViewById(R.id.button_objects);
+
+        llBottomSheet = (LinearLayout) view.findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
         //получаем высоту экрана
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
@@ -184,8 +266,12 @@ public class ObjectFragment extends Fragment {
         llBottomSheet.setMinimumHeight(maxHeight);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
+        imageObject = (ImageView) view.findViewById(R.id.imageObject);
 
-        objectFragmentSetData();
+        textName = (TextView) view.findViewById(R.id.textName);
+        textAddress = (TextView) view.findViewById(R.id.textAddress);
+        textDescription = (TextView) view.findViewById(R.id.textDescription);
+
 
         buttonBackToList = (Button) view.findViewById(R.id.buttonBackToList);
         buttonBackToList.setOnClickListener(new View.OnClickListener(){
@@ -195,6 +281,30 @@ public class ObjectFragment extends Fragment {
                 fragmentSendDataObjectListener.onSendDataObjectBack();
             }
         });
+
+
+        imageButtonCall = (ImageButton) view.findViewById(R.id.imageButtonCall);
+        imageButtonCall.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String[] phones = null;
+                phones = object.getPhone().split("\n");
+
+                String[] phone_first = phones[0].split("\\D+");
+                String phoneNumber =  String.join("", phone_first);
+
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNumber));
+                getActivity().startActivity(intent);
+
+            }
+        });
+
+        imageButtonWebsite = (ImageButton) view.findViewById(R.id.imageButtonWebsite);
+        imageButtonEmail = (ImageButton) view.findViewById(R.id.imageButtonEmail);
+        objectFragmentSetData();
 
         return view;
     }
