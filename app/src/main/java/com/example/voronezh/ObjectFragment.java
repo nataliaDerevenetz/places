@@ -49,6 +49,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ObjectFragment#newInstance} factory method to
@@ -84,6 +88,19 @@ public class ObjectFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public static boolean urlValidator(String url)
+    {
+        try {
+            new URL(url).toURI();
+            return true;
+        }
+        catch (URISyntaxException exception) {
+            return false;
+        }
+        catch (MalformedURLException exception) {
+            return false;
+        }
+    }
     public void objectFragmentSetData() {
         // заполняет фрагмент объекта
         object = (Object) getArguments().getSerializable(Object.class.getSimpleName());
@@ -114,7 +131,7 @@ public class ObjectFragment extends Fragment {
         if(object.getEmail().isEmpty()) {
             weightSum--;
         }
-        if(object.getWebsite().isEmpty()) {
+        if(object.getWebsite().isEmpty() || !urlValidator(object.getWebsite())) {
             weightSum--;
         }
 
@@ -128,7 +145,7 @@ public class ObjectFragment extends Fragment {
             }
         }
 
-        if(object.getWebsite().isEmpty()) {
+        if(object.getWebsite().isEmpty() || !urlValidator(object.getWebsite())) {
             imageButtonWebsite.setVisibility(View.GONE);
         } else {
             if (imageButtonWebsite.getVisibility() == View.GONE) {
@@ -303,6 +320,17 @@ public class ObjectFragment extends Fragment {
         });
 
         imageButtonWebsite = (ImageButton) view.findViewById(R.id.imageButtonWebsite);
+        imageButtonWebsite.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+
+                String url = object.getWebsite();
+                Intent openPage= new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                getActivity().startActivity(openPage);
+            }
+        });
         imageButtonEmail = (ImageButton) view.findViewById(R.id.imageButtonEmail);
         objectFragmentSetData();
 
