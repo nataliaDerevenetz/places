@@ -69,6 +69,7 @@ public class ObjectFragment extends Fragment {
     ImageButton imageButtonCall;
     ImageButton imageButtonWebsite;
     ImageButton imageButtonEmail;
+    ImageView imgAccess;
     TextView textName;
     TextView textAddress;
     TextView textDescription;
@@ -119,10 +120,15 @@ public class ObjectFragment extends Fragment {
         }
 */
 
-
         textDescription.setText(object.getDescription());
         textName.setText(object.getName());
         textAddress.setText(object.getAddress());
+
+        if(object.getEnviron() == 1) {
+            imgAccess.setVisibility(View.VISIBLE);
+        } else {
+            imgAccess.setVisibility(View.GONE);
+        }
 
         int weightSum = 3;
         if(object.getPhone().isEmpty()) {
@@ -267,6 +273,8 @@ public class ObjectFragment extends Fragment {
 
         mapview = (MapView) view.findViewById(R.id.mapview);
 
+        imgAccess = view.findViewById(R.id.imgAccessibility);
+
         nestedScroll = (NestedScrollView) view.findViewById(R.id.bottom_sheet_scroll);
 
         llBottomObjects = (LinearLayout) view.findViewById(R.id.button_objects);
@@ -332,6 +340,21 @@ public class ObjectFragment extends Fragment {
             }
         });
         imageButtonEmail = (ImageButton) view.findViewById(R.id.imageButtonEmail);
+
+        imageButtonEmail.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+
+                String email = object.getEmail();
+                Intent emailIntent= new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("plain/text");
+                // Кому
+                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { email });
+                getActivity().startActivity(emailIntent);
+            }
+        });
         objectFragmentSetData();
 
         return view;
